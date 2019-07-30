@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import fr.opensagres.xdocreport.core.utils.StringUtils;
 import fr.opensagres.xdocreport.template.formatter.FieldMetadata;
 import org.xml.sax.Attributes;
 
@@ -176,18 +177,37 @@ public class PBufferedRegion
 //                        firstR.setInstrText( mergedInstrText.toString(), firstR.getFieldAsTextStyling() );
 //                        fieldName = firstR.getFieldName();
 
+//                        FieldMetadata fieldAsTextStyling = null;
+//                        RBufferedRegion firstR = null;
+//
+//                        for (RBufferedRegion _region : rMerged) {
+//                            fieldAsTextStyling = _region.getFieldAsTextStyling();
+//                            if (fieldAsTextStyling != null) {
+//                                firstR = _region;
+//                                fieldName = _region.getFieldName();
+//                                break;
+//                            }
+//                        }
+//                        firstR.setInstrText( mergedInstrText.toString(), fieldAsTextStyling );
+
                         FieldMetadata fieldAsTextStyling = null;
                         RBufferedRegion firstR = null;
+                        boolean isFirstElement = true;
 
                         for (RBufferedRegion _region : rMerged) {
+                            if (isFirstElement) {
+                                isFirstElement = false;
+                                firstR = _region;
+                            }
                             fieldAsTextStyling = _region.getFieldAsTextStyling();
                             if (fieldAsTextStyling != null) {
                                 firstR = _region;
-                                fieldName = _region.getFieldName();
                                 break;
                             }
                         }
+
                         firstR.setInstrText( mergedInstrText.toString(), fieldAsTextStyling );
+                        fieldName = firstR.getFieldName();
                         /**************************/
 
                         if ( fieldName != null )

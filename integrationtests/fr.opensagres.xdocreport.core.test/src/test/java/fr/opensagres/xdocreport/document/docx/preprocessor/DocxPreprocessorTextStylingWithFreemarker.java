@@ -155,6 +155,99 @@ public class DocxPreprocessorTextStylingWithFreemarker
     }
 
     @Test
+    public void test2InstrText2()
+            throws Exception
+    {
+        DocxPreprocessor preprocessor = new DocxPreprocessor();
+        InputStream stream =
+                IOUtils.toInputStream( "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" + "<w:document "
+                        + "xmlns:ve=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" "
+                        + "xmlns:o=\"urn:schemas-microsoft-com:office:office\" "
+                        + "xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" "
+                        + "xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" "
+                        + "xmlns:v=\"urn:schemas-microsoft-com:vml\" "
+                        + "xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" "
+                        + "xmlns:w10=\"urn:schemas-microsoft-com:office:word\" "
+                        + "xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" "
+                        + "xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\">"
+
+                        + "<w:p w:rsidR=\"008E751F\" w:rsidRPr=\"00C20656\" w:rsidRDefault=\"00E4086C\" w:rsidP=\"00AA3AE5\">\n"
+                        + "<w:pPr>\n"
+                        + "<w:spacing w:after=\"0\"/>\n"
+                        + "<w:rPr>\n"
+                        + "<w:noProof/>\n"
+                        + "<w:lang w:val=\"en-US\"/>\n"
+                        + "</w:rPr>\n"
+                        + "</w:pPr>\n"
+                        + "<w:r>\n"
+                        + "<w:fldChar w:fldCharType=\"begin\"/>\n"
+                        + "</w:r>\n"
+                        + "<w:r w:rsidRPr=\"00C20656\">\n"
+                        + "  <w:rPr>\n"
+                        + "    <w:lang w:val=\"en-US\"/>\n"
+                        + "  </w:rPr>\n"
+                        + "  <w:instrText xml:space=\"preserve\"> MERGEFIELD  ${htmlText}  \\* MERGEFORMAT </w:instrText>\n"
+                        + "</w:r>\n"
+                        + "<w:r>\n"
+                        + "<w:fldChar w:fldCharType=\"separate\"/>\n"
+                        + "</w:r>\n"
+                        + "<w:r w:rsidR=\"006E20E5\" w:rsidRPr=\"00C20656\">\n"
+                        + "<w:rPr>\n"
+                        + "<w:noProof/>\n"
+                        + "<w:lang w:val=\"en-US\"/>\n"
+                        + "</w:rPr>\n"
+                        + "<w:t>«${htmlText}»</w:t>\n"
+                        + "</w:r>\n"
+                        + "<w:r>\n"
+                        + "<w:rPr>\n"
+                        + "<w:noProof/>\n"
+                        + "</w:rPr>\n"
+                        + "<w:fldChar w:fldCharType=\"end\"/>\n"
+                        + "</w:r>\n"
+                        + "</w:p>\n"
+
+                        + "</w:document>", "UTF-8"  );
+
+        StringWriter writer = new StringWriter();
+        FieldsMetadata metadata = new FieldsMetadata();
+        metadata.addFieldAsTextStyling( "htmlText", SyntaxKind.Html );
+        IDocumentFormatter formatter = new FreemarkerDocumentFormatter();
+
+        preprocessor.preprocess( "word/document.xml", stream, writer, metadata, formatter, new HashMap<String, Object>() );
+
+        Assert.assertEquals(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" + "<w:document "
+                + "xmlns:ve=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" "
+                + "xmlns:o=\"urn:schemas-microsoft-com:office:office\" "
+                + "xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" "
+                + "xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" "
+                + "xmlns:v=\"urn:schemas-microsoft-com:vml\" "
+                + "xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" "
+                + "xmlns:w10=\"urn:schemas-microsoft-com:office:word\" "
+                + "xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" "
+                + "xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\">"
+                + "[#assign ___NoEscape0=___TextStylingRegistry.transform(htmlText,\"Html\",false,\"DOCX\",\"0_elementId\",___context,\"word/document.xml\")] [#noescape]${___NoEscape0.textBefore}[/#noescape]"
+                + "<w:p w:rsidR=\"008E751F\" w:rsidRPr=\"00C20656\" w:rsidRDefault=\"00E4086C\" w:rsidP=\"00AA3AE5\">\n"
+                + "<w:pPr>\n"
+                + "<w:spacing w:after=\"0\"/>\n"
+                + "<w:rPr>\n"
+                + "<w:noProof/>\n"
+                + "<w:lang w:val=\"en-US\"/>\n"
+                + "</w:rPr>\n"
+                + "</w:pPr>\n\n\n\n"
+                + "<w:r w:rsidR=\"006E20E5\" w:rsidRPr=\"00C20656\">\n"
+                + "<w:rPr>\n"
+                + "<w:noProof/>\n"
+                + "<w:lang w:val=\"en-US\"/>\n"
+                + "</w:rPr>\n"
+                + "<w:t>[#noescape]${___NoEscape0.textBody}[/#noescape]</w:t>\n"
+                + "</w:r>\n\n"
+                + "</w:p>"
+                + "[#noescape]${___NoEscape0.textEnd}[/#noescape]\n"
+                + "</w:document>", writer.toString() );
+    }
+
+    @Test
     public void test2InstrTextWith2MD()
         throws Exception
     {
@@ -242,13 +335,7 @@ public class DocxPreprocessorTextStylingWithFreemarker
                                 "                <w:rPr>\n" +
                                 "                    <w:lang w:val=\"en-US\"/>\n" +
                                 "                </w:rPr>\n" +
-                                "                <w:instrText>MERGEFIELD ${field2</w:instrText>\n" +
-                                "            </w:r>\n" +
-                                "            <w:r>\n" +
-                                "                <w:rPr>\n" +
-                                "                    <w:lang w:val=\"en-US\"/>\n" +
-                                "                </w:rPr>\n" +
-                                "                <w:instrText xml:space=\"preserve\">} \\* MERGEFORMAT </w:instrText>\n" +
+                                "                <w:instrText>MERGEFIELD ${field2} \\* MERGEFORMAT </w:instrText>\n" +
                                 "            </w:r>\n" +
                                 "            <w:r>\n" +
                                 "                <w:rPr>\n" +
@@ -288,12 +375,7 @@ public class DocxPreprocessorTextStylingWithFreemarker
                 "                <w:rPr>\n" +
                 "                    <w:lang w:val=\"en-US\"/>\n" +
                 "                </w:rPr>\n" +
-                "            </w:pPr>\n" +
-                "            \n" +
-                "            \n" +
-                "            \n" +
-                "            \n" +
-                "            \n" +
+                "            </w:pPr>\n            \n            \n            \n            \n            \n" +
                 "            <w:r w:rsidR=\"00DD1465\">\n" +
                 "                <w:rPr>\n" +
                 "                    <w:noProof/>\n" +
@@ -310,17 +392,12 @@ public class DocxPreprocessorTextStylingWithFreemarker
                 "                </w:rPr>\n" +
                 "            </w:pPr>\n" +
                 "        </w:p>\n" +
-                "        [#assign ___NoEscape1=___TextStylingRegistry.transform(field2,\"Html\",false,\"DOCX\",\"1_elementId\",___context,\"word/document.xml\")] [#noescape]${___NoEscape1.textBefore}[/#noescape][#assign ___NoEscape2=___TextStylingRegistry.transform(field2,\"Html\",false,\"DOCX\",\"2_elementId\",___context,\"word/document.xml\")] [#noescape]${___NoEscape2.textBefore}[/#noescape]<w:p w14:paraId=\"71FF5154\" w14:textId=\"77777777\" w:rsidR=\"00DD1465\" w:rsidRDefault=\"00DD1465\" w:rsidP=\"00DD1465\">\n" +
+                "        [#assign ___NoEscape1=___TextStylingRegistry.transform(field2,\"Html\",false,\"DOCX\",\"1_elementId\",___context,\"word/document.xml\")] [#noescape]${___NoEscape1.textBefore}[/#noescape]<w:p w14:paraId=\"71FF5154\" w14:textId=\"77777777\" w:rsidR=\"00DD1465\" w:rsidRDefault=\"00DD1465\" w:rsidP=\"00DD1465\">\n" +
                 "            <w:pPr>\n" +
                 "                <w:rPr>\n" +
                 "                    <w:lang w:val=\"en-US\"/>\n" +
                 "                </w:rPr>\n" +
-                "            </w:pPr>\n" +
-                "            \n" +
-                "            \n" +
-                "            \n" +
-                "            \n" +
-                "            \n" +
+                "            </w:pPr>\n            \n            \n            \n            \n" +
                 "            <w:r>\n" +
                 "                <w:rPr>\n" +
                 "                    <w:noProof/>\n" +
@@ -329,11 +406,278 @@ public class DocxPreprocessorTextStylingWithFreemarker
                 "                <w:t>[#noescape]${___NoEscape1.textBody}[/#noescape]</w:t>\n" +
                 "            </w:r>\n" +
                 "            \n" +
-                "        </w:p>[#noescape]${___NoEscape1.textEnd}[/#noescape][#noescape]${___NoEscape2.textEnd}[/#noescape]\n" +
+                "        </w:p>[#noescape]${___NoEscape1.textEnd}[/#noescape]\n" +
                 "    </w:body>\n" +
                 "</w:document>", writer.toString() );
     }
-    
+
+    @Test
+    public void test2InstrTextDocxBreakingStuff()
+            throws Exception
+    {
+        DocxPreprocessor preprocessor = new DocxPreprocessor();
+        InputStream stream =
+                IOUtils.toInputStream( "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+                        "<w:document xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:cx=\"http://schemas.microsoft.com/office/drawing/2014/chartex\" xmlns:cx1=\"http://schemas.microsoft.com/office/drawing/2015/9/8/chartex\" xmlns:cx2=\"http://schemas.microsoft.com/office/drawing/2015/10/21/chartex\" xmlns:cx3=\"http://schemas.microsoft.com/office/drawing/2016/5/9/chartex\" xmlns:cx4=\"http://schemas.microsoft.com/office/drawing/2016/5/10/chartex\" xmlns:cx5=\"http://schemas.microsoft.com/office/drawing/2016/5/11/chartex\" xmlns:cx6=\"http://schemas.microsoft.com/office/drawing/2016/5/12/chartex\" xmlns:cx7=\"http://schemas.microsoft.com/office/drawing/2016/5/13/chartex\" xmlns:cx8=\"http://schemas.microsoft.com/office/drawing/2016/5/14/chartex\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:aink=\"http://schemas.microsoft.com/office/drawing/2016/ink\" xmlns:am3d=\"http://schemas.microsoft.com/office/drawing/2017/model3d\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:w16cid=\"http://schemas.microsoft.com/office/word/2016/wordml/cid\" xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 w15 w16se w16cid wp14\">\n" +
+                        "    <w:body>\n" +
+                        "        <w:p w14:paraId=\"472B0AAD\" w14:textId=\"00CF3D2E\" w:rsidR=\"008C0057\" w:rsidRPr=\"00350669\" w:rsidRDefault=\"00350669\">\n" +
+                        "            <w:pPr>\n" +
+                        "                <w:rPr>\n" +
+                        "                    <w:lang w:val=\"en-US\" />\n" +
+                        "                </w:rPr>\n" +
+                        "            </w:pPr>\n" +
+                        "            <w:bookmarkStart w:id=\"0\" w:name=\"_GoBack\" />\n" +
+                        "            <w:bookmarkEnd w:id=\"0\" />\n" +
+                        "            <w:r>\n" +
+                        "                <w:rPr>\n" +
+                        "                    <w:lang w:val=\"en-US\" />\n" +
+                        "                </w:rPr>\n" +
+                        "                <w:t>Hello,</w:t>\n" +
+                        "            </w:r>\n" +
+                        "            <w:r w:rsidR=\"003F7C24\">\n" +
+                        "                <w:rPr>\n" +
+                        "                    <w:lang w:val=\"en-US\" />\n" +
+                        "                </w:rPr>\n" +
+                        "                <w:t xml:space=\"preserve\"> </w:t>\n" +
+                        "            </w:r>\n" +
+                        "            <w:r w:rsidR=\"00F24665\">\n" +
+                        "                <w:rPr>\n" +
+                        "                    <w:lang w:val=\"en-US\" />\n" +
+                        "                </w:rPr>\n" +
+                        "                <w:fldChar w:fldCharType=\"begin\" />\n" +
+                        "            </w:r>\n" +
+                        "            <w:r w:rsidR=\"00F24665\">\n" +
+                        "                <w:rPr>\n" +
+                        "                    <w:lang w:val=\"en-US\" />\n" +
+                        "                </w:rPr>\n" +
+                        "                <w:instrText xml:space=\"preserve\"> MERGEFIELD ${user_name} </w:instrText>\n" +
+                        "            </w:r>\n" +
+                        "            <w:r w:rsidR=\"00F24665\">\n" +
+                        "                <w:rPr>\n" +
+                        "                    <w:lang w:val=\"en-US\" />\n" +
+                        "                </w:rPr>\n" +
+                        "                <w:fldChar w:fldCharType=\"separate\" />\n" +
+                        "            </w:r>\n" +
+                        "            <w:r w:rsidR=\"00F24665\">\n" +
+                        "                <w:rPr>\n" +
+                        "                    <w:noProof />\n" +
+                        "                    <w:lang w:val=\"en-US\" />\n" +
+                        "                </w:rPr>\n" +
+                        "                <w:t>«${user_name}»</w:t>\n" +
+                        "            </w:r>\n" +
+                        "            <w:r w:rsidR=\"00F24665\">\n" +
+                        "                <w:rPr>\n" +
+                        "                    <w:lang w:val=\"en-US\" />\n" +
+                        "                </w:rPr>\n" +
+                        "                <w:fldChar w:fldCharType=\"end\" />\n" +
+                        "            </w:r>\n" +
+                        "            <w:r w:rsidR=\"00F24665\">\n" +
+                        "                <w:rPr>\n" +
+                        "                    <w:lang w:val=\"en-US\" />\n" +
+                        "                </w:rPr>\n" +
+                        "                <w:t>!</w:t>\n" +
+                        "            </w:r>\n" +
+                        "        </w:p>\n" +
+                        "        <w:sectPr w:rsidR=\"008C0057\" w:rsidRPr=\"00350669\" w:rsidSect=\"00B23DB1\">\n" +
+                        "            <w:pgSz w:w=\"11900\" w:h=\"16840\" />\n" +
+                        "            <w:pgMar w:top=\"1134\" w:right=\"850\" w:bottom=\"1134\" w:left=\"1701\" w:header=\"708\" w:footer=\"708\" w:gutter=\"0\" />\n" +
+                        "            <w:cols w:space=\"708\" />\n" +
+                        "            <w:docGrid w:linePitch=\"360\" />\n" +
+                        "        </w:sectPr>\n" +
+                        "    </w:body>\n" +
+                        "</w:document>"  );
+
+        StringWriter writer = new StringWriter();
+        FieldsMetadata metadata = new FieldsMetadata();
+        IDocumentFormatter formatter = new FreemarkerDocumentFormatter();
+
+        preprocessor.preprocess( "word/document.xml", stream, writer, metadata, formatter, new HashMap<String, Object>() );
+
+        Assert.assertEquals( "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:cx=\"http://schemas.microsoft.com/office/drawing/2014/chartex\" xmlns:cx1=\"http://schemas.microsoft.com/office/drawing/2015/9/8/chartex\" xmlns:cx2=\"http://schemas.microsoft.com/office/drawing/2015/10/21/chartex\" xmlns:cx3=\"http://schemas.microsoft.com/office/drawing/2016/5/9/chartex\" xmlns:cx4=\"http://schemas.microsoft.com/office/drawing/2016/5/10/chartex\" xmlns:cx5=\"http://schemas.microsoft.com/office/drawing/2016/5/11/chartex\" xmlns:cx6=\"http://schemas.microsoft.com/office/drawing/2016/5/12/chartex\" xmlns:cx7=\"http://schemas.microsoft.com/office/drawing/2016/5/13/chartex\" xmlns:cx8=\"http://schemas.microsoft.com/office/drawing/2016/5/14/chartex\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:aink=\"http://schemas.microsoft.com/office/drawing/2016/ink\" xmlns:am3d=\"http://schemas.microsoft.com/office/drawing/2017/model3d\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:w16cid=\"http://schemas.microsoft.com/office/word/2016/wordml/cid\" xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 w15 w16se w16cid wp14\">\n" +
+                "    <w:body>\n" +
+                "        <w:p w14:paraId=\"472B0AAD\" w14:textId=\"00CF3D2E\" w:rsidR=\"008C0057\" w:rsidRPr=\"00350669\" w:rsidRDefault=\"00350669\">\n" +
+                "            <w:pPr>\n" +
+                "                <w:rPr>\n" +
+                "                    <w:lang w:val=\"en-US\"/>\n" +
+                "                </w:rPr>\n" +
+                "            </w:pPr>\n" +
+                "            <w:bookmarkStart w:id=\"0\" w:name=\"_GoBack\"/>\n" +
+                "            <w:bookmarkEnd w:id=\"0\"/>\n" +
+                "            <w:r>\n" +
+                "                <w:rPr>\n" +
+                "                    <w:lang w:val=\"en-US\"/>\n" +
+                "                </w:rPr>\n" +
+                "                <w:t>Hello,</w:t>\n" +
+                "            </w:r>\n" +
+                "            <w:r w:rsidR=\"003F7C24\">\n" +
+                "                <w:rPr>\n" +
+                "                    <w:lang w:val=\"en-US\"/>\n" +
+                "                </w:rPr>\n" +
+                "                <w:t xml:space=\"preserve\"> </w:t>\n" +
+                "            </w:r>\n" +
+                "            \n" +
+                "            \n" +
+                "            \n" +
+                "            <w:r w:rsidR=\"00F24665\">\n" +
+                "                <w:rPr>\n" +
+                "                    <w:noProof/>\n" +
+                "                    <w:lang w:val=\"en-US\"/>\n" +
+                "                </w:rPr>\n" +
+                "                <w:t>${user_name}</w:t>\n" +
+                "            </w:r>\n" +
+                "            \n" +
+                "            <w:r w:rsidR=\"00F24665\">\n" +
+                "                <w:rPr>\n" +
+                "                    <w:lang w:val=\"en-US\"/>\n" +
+                "                </w:rPr>\n" +
+                "                <w:t>!</w:t>\n" +
+                "            </w:r>\n" +
+                "        </w:p>\n" +
+                "        <w:sectPr w:rsidR=\"008C0057\" w:rsidRPr=\"00350669\" w:rsidSect=\"00B23DB1\">\n" +
+                "            <w:pgSz w:w=\"11900\" w:h=\"16840\"/>\n" +
+                "            <w:pgMar w:top=\"1134\" w:right=\"850\" w:bottom=\"1134\" w:left=\"1701\" w:header=\"708\" w:footer=\"708\" w:gutter=\"0\"/>\n" +
+                "            <w:cols w:space=\"708\"/>\n" +
+                "            <w:docGrid w:linePitch=\"360\"/>\n" +
+                "        </w:sectPr>\n" +
+                "    </w:body>\n" +
+                "</w:document>", writer.toString() );
+    }
+
+    @Test
+    public void test2InstrTextDocxBreakingStuff2()
+            throws Exception
+    {
+        DocxPreprocessor preprocessor = new DocxPreprocessor();
+        InputStream stream =
+                IOUtils.toInputStream( "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+                        "<w:document xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:cx=\"http://schemas.microsoft.com/office/drawing/2014/chartex\" xmlns:cx1=\"http://schemas.microsoft.com/office/drawing/2015/9/8/chartex\" xmlns:cx2=\"http://schemas.microsoft.com/office/drawing/2015/10/21/chartex\" xmlns:cx3=\"http://schemas.microsoft.com/office/drawing/2016/5/9/chartex\" xmlns:cx4=\"http://schemas.microsoft.com/office/drawing/2016/5/10/chartex\" xmlns:cx5=\"http://schemas.microsoft.com/office/drawing/2016/5/11/chartex\" xmlns:cx6=\"http://schemas.microsoft.com/office/drawing/2016/5/12/chartex\" xmlns:cx7=\"http://schemas.microsoft.com/office/drawing/2016/5/13/chartex\" xmlns:cx8=\"http://schemas.microsoft.com/office/drawing/2016/5/14/chartex\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:aink=\"http://schemas.microsoft.com/office/drawing/2016/ink\" xmlns:am3d=\"http://schemas.microsoft.com/office/drawing/2017/model3d\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:w16cid=\"http://schemas.microsoft.com/office/word/2016/wordml/cid\" xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 w15 w16se w16cid wp14\">\n" +
+                        "    <w:body>\n" +
+                        "        <w:p w14:paraId=\"472B0AAD\" w14:textId=\"5F7E69FC\" w:rsidR=\"008C0057\" w:rsidRPr=\"00350669\" w:rsidRDefault=\"00350669\">\n" +
+                        "            <w:pPr>\n" +
+                        "                <w:rPr>\n" +
+                        "                    <w:lang w:val=\"en-US\" />\n" +
+                        "                </w:rPr>\n" +
+                        "            </w:pPr>\n" +
+                        "            <w:r>\n" +
+                        "                <w:rPr>\n" +
+                        "                    <w:lang w:val=\"en-US\" />\n" +
+                        "                </w:rPr>\n" +
+                        "                <w:t>Hello,</w:t>\n" +
+                        "            </w:r>\n" +
+                        "            <w:r w:rsidR=\"0020161A\">\n" +
+                        "                <w:rPr>\n" +
+                        "                    <w:lang w:val=\"en-US\" />\n" +
+                        "                </w:rPr>\n" +
+                        "                <w:fldChar w:fldCharType=\"begin\" />\n" +
+                        "            </w:r>\n" +
+                        "            <w:r w:rsidR=\"0020161A\">\n" +
+                        "                <w:rPr>\n" +
+                        "                    <w:lang w:val=\"en-US\" />\n" +
+                        "                </w:rPr>\n" +
+                        "                <w:instrText xml:space=\"preserve\"> MERGEFIELD ${</w:instrText>\n" +
+                        "            </w:r>\n" +
+                        "            <w:bookmarkStart w:id=\"0\" w:name=\"_GoBack\" />\n" +
+                        "            <w:bookmarkEnd w:id=\"0\" />\n" +
+                        "            <w:r w:rsidR=\"0020161A\" w:rsidRPr=\"0020161A\">\n" +
+                        "                <w:rPr>\n" +
+                        "                    <w:lang w:val=\"en-US\" />\n" +
+                        "                </w:rPr>\n" +
+                        "                <w:instrText>user_name</w:instrText>\n" +
+                        "            </w:r>\n" +
+                        "            <w:r w:rsidR=\"0020161A\">\n" +
+                        "                <w:rPr>\n" +
+                        "                    <w:lang w:val=\"en-US\" />\n" +
+                        "                </w:rPr>\n" +
+                        "                <w:instrText xml:space=\"preserve\">} </w:instrText>\n" +
+                        "            </w:r>\n" +
+                        "            <w:r w:rsidR=\"0020161A\">\n" +
+                        "                <w:rPr>\n" +
+                        "                    <w:lang w:val=\"en-US\" />\n" +
+                        "                </w:rPr>\n" +
+                        "                <w:fldChar w:fldCharType=\"separate\" />\n" +
+                        "            </w:r>\n" +
+                        "            <w:r w:rsidR=\"0020161A\">\n" +
+                        "                <w:rPr>\n" +
+                        "                    <w:noProof />\n" +
+                        "                    <w:lang w:val=\"en-US\" />\n" +
+                        "                </w:rPr>\n" +
+                        "                <w:t>«${}»</w:t>\n" +
+                        "            </w:r>\n" +
+                        "            <w:r w:rsidR=\"0020161A\">\n" +
+                        "                <w:rPr>\n" +
+                        "                    <w:lang w:val=\"en-US\" />\n" +
+                        "                </w:rPr>\n" +
+                        "                <w:fldChar w:fldCharType=\"end\" />\n" +
+                        "            </w:r>\n" +
+                        "            <w:r w:rsidR=\"00F24665\">\n" +
+                        "                <w:rPr>\n" +
+                        "                    <w:lang w:val=\"en-US\" />\n" +
+                        "                </w:rPr>\n" +
+                        "                <w:t>!</w:t>\n" +
+                        "            </w:r>\n" +
+                        "        </w:p>\n" +
+                        "        <w:sectPr w:rsidR=\"008C0057\" w:rsidRPr=\"00350669\" w:rsidSect=\"00B23DB1\">\n" +
+                        "            <w:pgSz w:w=\"11900\" w:h=\"16840\" />\n" +
+                        "            <w:pgMar w:top=\"1134\" w:right=\"850\" w:bottom=\"1134\" w:left=\"1701\" w:header=\"708\" w:footer=\"708\" w:gutter=\"0\" />\n" +
+                        "            <w:cols w:space=\"708\" />\n" +
+                        "            <w:docGrid w:linePitch=\"360\" />\n" +
+                        "        </w:sectPr>\n" +
+                        "    </w:body>\n" +
+                        "</w:document>"  );
+
+        StringWriter writer = new StringWriter();
+        FieldsMetadata metadata = new FieldsMetadata();
+        IDocumentFormatter formatter = new FreemarkerDocumentFormatter();
+
+        preprocessor.preprocess( "word/document.xml", stream, writer, metadata, formatter, new HashMap<String, Object>() );
+
+        Assert.assertEquals( "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:cx=\"http://schemas.microsoft.com/office/drawing/2014/chartex\" xmlns:cx1=\"http://schemas.microsoft.com/office/drawing/2015/9/8/chartex\" xmlns:cx2=\"http://schemas.microsoft.com/office/drawing/2015/10/21/chartex\" xmlns:cx3=\"http://schemas.microsoft.com/office/drawing/2016/5/9/chartex\" xmlns:cx4=\"http://schemas.microsoft.com/office/drawing/2016/5/10/chartex\" xmlns:cx5=\"http://schemas.microsoft.com/office/drawing/2016/5/11/chartex\" xmlns:cx6=\"http://schemas.microsoft.com/office/drawing/2016/5/12/chartex\" xmlns:cx7=\"http://schemas.microsoft.com/office/drawing/2016/5/13/chartex\" xmlns:cx8=\"http://schemas.microsoft.com/office/drawing/2016/5/14/chartex\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:aink=\"http://schemas.microsoft.com/office/drawing/2016/ink\" xmlns:am3d=\"http://schemas.microsoft.com/office/drawing/2017/model3d\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:w16cid=\"http://schemas.microsoft.com/office/word/2016/wordml/cid\" xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 w15 w16se w16cid wp14\">\n" +
+                "    <w:body>\n" +
+                "        <w:p w14:paraId=\"472B0AAD\" w14:textId=\"5F7E69FC\" w:rsidR=\"008C0057\" w:rsidRPr=\"00350669\" w:rsidRDefault=\"00350669\">\n" +
+                "            <w:pPr>\n" +
+                "                <w:rPr>\n" +
+                "                    <w:lang w:val=\"en-US\"/>\n" +
+                "                </w:rPr>\n" +
+                "            </w:pPr>\n" +
+                "            <w:r>\n" +
+                "                <w:rPr>\n" +
+                "                    <w:lang w:val=\"en-US\"/>\n" +
+                "                </w:rPr>\n" +
+                "                <w:t>Hello,</w:t>\n" +
+                "            </w:r>\n" +
+                "            \n" +
+                "            \n" +
+                "            <w:bookmarkStart w:id=\"0\" w:name=\"_GoBack\"/>\n" +
+                "            <w:bookmarkEnd w:id=\"0\"/>\n" +
+                "            \n" +
+                "            \n" +
+                "            \n" +
+                "            <w:r w:rsidR=\"0020161A\">\n" +
+                "                <w:rPr>\n" +
+                "                    <w:noProof/>\n" +
+                "                    <w:lang w:val=\"en-US\"/>\n" +
+                "                </w:rPr>\n" +
+                "                <w:t>${user_name}</w:t>\n" +
+                "            </w:r>\n" +
+                "            \n" +
+                "            <w:r w:rsidR=\"00F24665\">\n" +
+                "                <w:rPr>\n" +
+                "                    <w:lang w:val=\"en-US\"/>\n" +
+                "                </w:rPr>\n" +
+                "                <w:t>!</w:t>\n" +
+                "            </w:r>\n" +
+                "        </w:p>\n" +
+                "        <w:sectPr w:rsidR=\"008C0057\" w:rsidRPr=\"00350669\" w:rsidSect=\"00B23DB1\">\n" +
+                "            <w:pgSz w:w=\"11900\" w:h=\"16840\"/>\n" +
+                "            <w:pgMar w:top=\"1134\" w:right=\"850\" w:bottom=\"1134\" w:left=\"1701\" w:header=\"708\" w:footer=\"708\" w:gutter=\"0\"/>\n" +
+                "            <w:cols w:space=\"708\"/>\n" +
+                "            <w:docGrid w:linePitch=\"360\"/>\n" +
+                "        </w:sectPr>\n" +
+                "    </w:body>\n" +
+                "</w:document>", writer.toString() );
+    }
+
+
     @Test
     public void textStylingWithSimpleField()
         throws Exception
