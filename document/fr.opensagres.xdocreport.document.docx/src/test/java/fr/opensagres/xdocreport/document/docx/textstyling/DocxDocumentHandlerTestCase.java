@@ -544,7 +544,7 @@ public class DocxDocumentHandlerTestCase
     }
 
     @Test
-    public void testUnorderedList()
+    public void testOrderedAndUnorderedList()
         throws Exception
     {
         IContext context = new MockContext();
@@ -597,7 +597,7 @@ public class DocxDocumentHandlerTestCase
     }
     
     @Test
-    public void testOrderedAndUnorderedList()
+    public void testUnorderedList()
         throws Exception
     {
         IContext context = new MockContext();

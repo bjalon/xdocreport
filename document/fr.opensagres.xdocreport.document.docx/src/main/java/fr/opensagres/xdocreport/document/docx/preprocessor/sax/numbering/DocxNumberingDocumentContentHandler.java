@@ -221,7 +221,8 @@ public class DocxNumberingDocumentContentHandler
         String abstractNumId = formatter.formatAsSimpleField( false, ITEM_INFO, "abstractNumId" );
 
         String abstractNumOrdered = formatter.formatAsSimpleField( false, ITEM_INFO, "ordered" );
-        String startIfOrderedList = formatter.getStartIfDirective( abstractNumOrdered );
+
+        String startIfOrderedList = formatter.getStartIfDirective( abstractNumOrdered, false );
         script.append( startIfOrderedList );
 
         script.append( formatter.getFunctionDirective( DocxContextHelper.STYLES_GENERATOR_KEY,
